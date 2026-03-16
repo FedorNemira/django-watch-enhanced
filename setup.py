@@ -2,7 +2,7 @@ import setuptools
 
 
 __author__ = 'Sobolev Andrey <email.asobolev@gmail.com>'
-__version__ = '0.5.3'
+__version__ = '0.6.0'
 
 
 with open("README.md", "r") as fh:
@@ -10,7 +10,7 @@ with open("README.md", "r") as fh:
 
 
 setuptools.setup(
-    name='django-watch',
+    name='django-watch-enhanced',
     version=__version__,
     install_requires=['django>=1.11'],
     author='Sobolev Andrey',

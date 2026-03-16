@@ -47,13 +47,26 @@ class WatchMiddleware:
             print(process_stdout_end)
         return response
 
-    def process_view(self, request, func, args, kwargs):                 
-        func = unwrap(func)   
-        if hasattr(func, "__code__"):
+    def process_view(self, request, func, args, kwargs):
+        view_class = getattr(func, "view_class", None)
+        func = unwrap(func)
+
+        if view_class:
+            method_name = request.method.lower()
+            method_func = getattr(view_class, method_name, None)
+            code = method_func.__code__ if method_func and hasattr(method_func, "__code__") else None
+            display_name = f"{view_class.__name__}.{method_name}"
+            filename = code.co_filename if code else ""
+            lineno = code.co_firstlineno if code else "?"
+            process_stdout_start = f"\n░░ {self.BOLD}{request.method} {filename} {self.END} • {self.GREEN}{display_name}{self.END} • {self.YELLOW}Line number {lineno}{self.END}"
+            request.process_stdout_end = f"\n░░ {self.BOLD}{request.method} {filename} {self.END} • {self.GREEN}{display_name} [  OK  ]{self.END}"
+        elif hasattr(func, "__code__"):
             process_stdout_start = f"\n░░ {self.BOLD}{request.method} {func.__code__.co_filename} {self.END} • {self.GREEN}{func.__name__}{self.END} • {self.YELLOW}Line number {func.__code__.co_firstlineno}{self.END}"
             request.process_stdout_end = f"\n░░ {self.BOLD}{request.method} {func.__code__.co_filename} {self.END} • {self.GREEN}{func.__name__} [  OK  ]{self.END}"
-            
-            print(process_stdout_start)
+        else:
+            return
+
+        print(process_stdout_start)
             if args: 
                 print(f"░░░░ args: {args}"[:200])
             if kwargs: 
