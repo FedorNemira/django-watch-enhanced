@@ -1,5 +1,5 @@
-import time
 import logging
+import time
 import traceback
 
 
@@ -67,21 +67,21 @@ class WatchMiddleware:
             return
 
         print(process_stdout_start)
-            if args: 
-                print(f"░░░░ args: {args}"[:200])
-            if kwargs: 
-                print(f"░░░░ kwargs: {kwargs}"[:200])
-            if request.GET:
-                print(f"░░░░ request.GET: {request.GET}"[:200])                
-            if request.POST: 
-                print(f"░░░░ request.POST: {request.POST}"[:200])
-                
-            try:
-                if not request.POST and request.body:
-                    print(f"░░░░ request.body: {request.body}"[:200])
-            except Exception as e:
-                pass
+        if args: 
+            print(f"░░░░ args: {args}"[:200])
+        if kwargs: 
+            print(f"░░░░ kwargs: {kwargs}"[:200])
+        if request.GET:
+            print(f"░░░░ request.GET: {request.GET}"[:200])                
+        if request.POST: 
+            print(f"░░░░ request.POST: {request.POST}"[:200])
             
+        try:
+            if not request.POST and request.body:
+                print(f"░░░░ request.body: {request.body}"[:200])
+        except Exception as e:
+            pass
+        
     def process_exception(self, request, exception):
         print(f"{self.RED}{self.BOLD}░ Exception{self.END}{self.END}")
         print( "░░░░ TRACEBACK:\n{}".format( "".join(traceback.format_exception(type(exception), exception, exception.__traceback__))))
