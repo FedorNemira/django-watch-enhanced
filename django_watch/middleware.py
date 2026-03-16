@@ -1,4 +1,4 @@
-import logging
+import inspect
 import time
 import traceback
 
@@ -53,11 +53,14 @@ class WatchMiddleware:
 
         if view_class:
             method_name = request.method.lower()
-            method_func = getattr(view_class, method_name, None)
-            code = method_func.__code__ if method_func and hasattr(method_func, "__code__") else None
+
             display_name = f"{view_class.__name__}.{method_name}"
-            filename = code.co_filename if code else ""
-            lineno = code.co_firstlineno if code else "?"
+            filename = inspect.getfile(view_class)
+            own_method = view_class.__dict__.get(method_name)
+            if own_method and hasattr(own_method, "__code__"):
+                lineno = own_method.__code__.co_firstlineno
+            else:
+                lineno = inspect.getsourcelines(view_class)[1]
             process_stdout_start = f"\n░░ {self.BOLD}{request.method} {filename} {self.END} • {self.GREEN}{display_name}{self.END} • {self.YELLOW}Line number {lineno}{self.END}"
             request.process_stdout_end = f"\n░░ {self.BOLD}{request.method} {filename} {self.END} • {self.GREEN}{display_name} [  OK  ]{self.END}"
         elif hasattr(func, "__code__"):
